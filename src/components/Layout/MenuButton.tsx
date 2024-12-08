@@ -6,6 +6,8 @@ interface MenuButtonProps {
 }
 
 export const MenuButton = ({ onClick }: MenuButtonProps) => {
+  
+  
   return (
     <IconButton
       color="inherit"
@@ -13,6 +15,7 @@ export const MenuButton = ({ onClick }: MenuButtonProps) => {
       onClick={onClick}
       sx={{ mr: 2 }}
     >
+      
       <MenuIcon />
     </IconButton>
   );
