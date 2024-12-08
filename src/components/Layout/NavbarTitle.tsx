@@ -1,18 +1,18 @@
-import { Typography } from '@mui/material';
-import { find, menuItems } from './Sidebar';
-import { useState } from 'react';
-
-export function RoutePath(index:number)
-{
- return menuItems[index].text;
-}
+import { Typography } from "@mui/material";
+import { useLocation } from "react-router-dom";
 
 export const NavbarTitle = () => {
+  const location = useLocation();
+  const currentPath = getHumanReadablePath(location.pathname);
 
-
+  function getHumanReadablePath(path: string) {
+    if (path === "/") return "Home";
+    if (path === "/about") return "About";
+    return "Unknown";
+  }
   return (
     <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-      My App:{find}
+      Berkay Game: {currentPath}
     </Typography>
   );
 };
