@@ -12,7 +12,7 @@ export const Home = () => {
 
   return (
     <Paper elevation={3} sx={{ p: 4 }}>
-      <Box sx={{ maxWidth: 800, mx: 'auto' }}>
+      <Box sx={{ maxWidth: 800, mx: "auto" }}>
         <Typography variant="h4" component="h1" gutterBottom>
           Welcome Home
         </Typography>
