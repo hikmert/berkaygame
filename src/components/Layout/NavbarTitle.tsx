@@ -8,6 +8,8 @@ export const NavbarTitle = () => {
   function getHumanReadablePath(path: string) {
     if (path === "/") return "Home";
     if (path === "/about") return "About";
+    if (path === "/playground") return "PlayGround";
+    if (path === "/userProfile") return "UserProfile";
     return "Unknown";
   }
   return (
