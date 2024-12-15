@@ -1,12 +1,14 @@
-import React, { useRef, useEffect, useState, useContext, useDebugValue } from "react";
+import React, { useRef, useEffect, useState } from "react";
 import { Box } from "@mui/material";
-import { useActionData } from "react-router-dom";
+import { Score } from "./Playground";
+import Fireworks, { FireworksHandlers } from "@fireworks-js/react";
 
 interface AxisControllerProps {
   xValue: number;
   yValue: number;
   setX: Function;
   setY: Function;
+  setScores: Function;
 }
 
 export const AxisController = ({
@@ -14,25 +16,27 @@ export const AxisController = ({
   yValue,
   setX,
   setY,
+  setScores,
 }: AxisControllerProps) => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
-
+  const fireworksRef = useRef<FireworksHandlers>(null);
   const [isDragging, setIsDragging] = useState(false);
-const [score,setScore]=useState(0);
+  const [showFireworks, setShowFireworks] = useState(false);
+
   // Canvas parameters
   const width = 400;
   const height = 300;
   const padding = 40;
   const maxX = 100;
   const maxY = 100;
-  const kaleXpos=95;
-  const kaleYpos1=70;
-  const kaleYpos2=20;
-let takescore=false;
+  const kaleXpos = 95;
+  const kaleYpos1 = 70;
+  const kaleYpos2 = 20;
+  let takescore = false;
   const pointRadius = 5;
-  let kaleX=((width - 2 * padding) / maxX)*kaleXpos;
-  let kaleY1=((height - 2 * padding) / maxY)*kaleYpos1;
-  let kaleY2=((height - 2 * padding) / maxY)*kaleYpos2;
+  let kaleX = ((width - 2 * padding) / maxX) * kaleXpos;
+  let kaleY1 = ((height - 2 * padding) / maxY) * kaleYpos1;
+  let kaleY2 = ((height - 2 * padding) / maxY) * kaleYpos2;
   const scaledX = ((width - 2 * padding) / maxX) * xValue;
   const scaledY = ((height - 2 * padding) / maxY) * yValue;
   // Convert data to canvas coordinates
@@ -65,14 +69,14 @@ let takescore=false;
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
-    function Kale(ctx:CanvasRenderingContext2D,x:number[],y:number[]){
-  ctx.beginPath();
-  ctx.strokeStyle="gray";
-  ctx.lineWidth=5;
-  ctx.moveTo(x[0],y[0]);
-  ctx.lineTo(x[1],y[1]);
-ctx.stroke();
-}
+    function Kale(ctx: CanvasRenderingContext2D, x: number[], y: number[]) {
+      ctx.beginPath();
+      ctx.strokeStyle = "gray";
+      ctx.lineWidth = 5;
+      ctx.moveTo(x[0], y[0]);
+      ctx.lineTo(x[1], y[1]);
+      ctx.stroke();
+    }
     // Clear
     ctx.clearRect(0, 0, width, height);
 
@@ -81,7 +85,6 @@ ctx.stroke();
     ctx.translate(padding, height - padding);
     ctx.scale(1, -1);
 
-  
     // Draw axes
     ctx.strokeStyle = "#000";
     ctx.beginPath();
@@ -97,21 +100,17 @@ ctx.stroke();
     ctx.stroke();
 
     // Draw point
-   
 
     ctx.fillStyle = "red";
     ctx.beginPath();
     ctx.arc(scaledX, scaledY, pointRadius, 0, Math.PI * 2);
     ctx.fill();
-    
-    Kale(ctx,[kaleX,kaleX],[kaleY1,kaleY2]);
-    
- 
+
+    Kale(ctx, [kaleX, kaleX], [kaleY1, kaleY2]);
 
     ctx.restore();
+  }, [xValue, yValue]);
 
-  },[xValue, yValue]);
- 
   const handleMouseDown = (e: React.MouseEvent<HTMLCanvasElement>) => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -146,17 +145,36 @@ ctx.stroke();
 
     setX(clampedX);
     setY(clampedY);
-if(clampedX>kaleXpos && clampedY>kaleYpos2 && clampedY<kaleYpos1 && takescore==false){
-  takescore=true;
+    if (
+      clampedX > kaleXpos &&
+      clampedY > kaleYpos2 &&
+      clampedY < kaleYpos1 &&
+      takescore == false
+    ) {
+      takescore = true;
+    }
+    if (takescore == true) {
+      // TODO: SET BERKAY'S SCORE +1
 
+      setScores((prevScores: Score[]) => {
+        return prevScores.map((score) => {
+          if (score.id === 1) {
+            return { ...score, score: score.score + 1 };
+          }
+          return score;
+        });
+      });
+      fireworksRef.current?.start();
+      setShowFireworks(true);
+      setTimeout(() => {
+        setShowFireworks(false);
+        fireworksRef.current?.stop();
+      }, 4000);
 
-}
-if(takescore==true){
-  setScore(score+1);
-  setIsDragging(false);
-  setX(0);
-setY(0);
-}
+      setIsDragging(false);
+      setX(0);
+      setY(0);
+    }
   };
 
   const handleMouseUp = () => {
@@ -167,20 +185,49 @@ setY(0);
     // If mouse leaves the canvas, we should stop dragging
     setIsDragging(false);
   };
-// setTimeout(() => {
-    
-//     if (scaledX>kaleX && scaledY<kaleY1 && scaledY>kaleY2 && takescore==true) {
-    
-//     SetScore(score+1);
-
-
-
-//   }
-
-// }, 1);
- 
   return (
     <Box>
+      {showFireworks && (
+        <Box
+          sx={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            width: "100%",
+            height: "100%",
+            pointerEvents: "none", // So mouse interactions pass through
+          }}
+        >
+          <Fireworks
+            ref={fireworksRef}
+            style={{
+              top: 0,
+              left: 0,
+              width: "100%",
+              height: "100%",
+              position: "fixed",
+              background: "rgba(0,0,0,0)",
+            }}
+          />
+
+          <Box
+            sx={{
+              position: "absolute",
+              top: "50%",
+              left: "50%",
+              transform: "translate(-50%, -50%)",
+              color: "#fff",
+              fontSize: "4rem",
+              fontWeight: "bold",
+              textShadow: "2px 2px 8px rgba(0,0,0,0.7)",
+              pointerEvents: "none", // Ensure text doesn't block mouse events
+            }}
+          >
+            GOAL
+          </Box>
+        </Box>
+      )}
+
       <canvas
         ref={canvasRef}
         width={width}
@@ -196,8 +243,6 @@ setY(0);
       />
       <div>
         X: {xValue.toFixed(2)}, Y: {yValue.toFixed(2)}
-
-        Score: {score}
       </div>
     </Box>
   );

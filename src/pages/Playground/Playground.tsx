@@ -13,9 +13,22 @@ enum Axis {
   Y = "Y",
 }
 
+export interface Score {
+  id: number;
+  name: string;
+  score: number;
+}
+
 export const Playground = () => {
   const [xCount, setxCount] = React.useState(0);
   const [yCount, setyCount] = React.useState(0);
+  const [scores, setScores] = React.useState<Score[]>([
+    { id: 1, name: "Berkay", score: 65 },
+    { id: 2, name: "John", score: 20 },
+    { id: 3, name: "Jane", score: 80 },
+    { id: 4, name: "Doe", score: 82 },
+    { id: 5, name: "Alice", score: 60 },
+  ]);
 
   const handleCount = (direction: Direction, axis: Axis) => {
     if (axis === Axis.X) {
@@ -93,12 +106,13 @@ export const Playground = () => {
           yValue={yCount}
           setX={setxCount}
           setY={setyCount}
+          setScores={setScores}
         />
       </Box>
 
       {/* ScoreBoard Section */}
       <Box sx={{ maxWidth: 800, mx: "auto" }}>
-        <ScoreBoard />
+        <ScoreBoard scores={scores} />
       </Box>
     </Box>
   );

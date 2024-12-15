@@ -9,18 +9,13 @@ import {
   Divider,
 } from "@mui/material";
 import { Star } from "lucide-react";
+import { Score } from "./Playground";
 
-const scores = [
-  { id: 1, name: "Berkay", score: 100 },
-  { id: 2, name: "John", score: 20 },
-  { id: 3, name: "Jane", score: 80 },
-  { id: 4, name: "Doe", score: 82 },
-  { id: 5, name: "Alice", score: 60 },
-];
-
-const sortedScores = scores.sort((a, b) => b.score - a.score);
-
-export const ScoreBoard = () => {
+interface ScoreBoardProps {
+  scores: Score[];
+}
+export const ScoreBoard = ({ scores }: ScoreBoardProps) => {
+  const sortedScores = scores.sort((a, b) => b.score - a.score);
 
   return (
     <Paper
