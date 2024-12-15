@@ -1,5 +1,6 @@
-import React, { useRef, useEffect, useState } from "react";
+import React, { useRef, useEffect, useState, useContext, useDebugValue } from "react";
 import { Box } from "@mui/material";
+import { useActionData } from "react-router-dom";
 
 interface AxisControllerProps {
   xValue: number;
@@ -17,15 +18,23 @@ export const AxisController = ({
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
   const [isDragging, setIsDragging] = useState(false);
-
+const [score,setScore]=useState(0);
   // Canvas parameters
   const width = 400;
   const height = 300;
   const padding = 40;
   const maxX = 100;
   const maxY = 100;
+  const kaleXpos=95;
+  const kaleYpos1=70;
+  const kaleYpos2=20;
+let takescore=false;
   const pointRadius = 5;
-
+  let kaleX=((width - 2 * padding) / maxX)*kaleXpos;
+  let kaleY1=((height - 2 * padding) / maxY)*kaleYpos1;
+  let kaleY2=((height - 2 * padding) / maxY)*kaleYpos2;
+  const scaledX = ((width - 2 * padding) / maxX) * xValue;
+  const scaledY = ((height - 2 * padding) / maxY) * yValue;
   // Convert data to canvas coordinates
   const dataToCanvas = (xVal: number, yVal: number) => {
     const scaledX = ((width - 2 * padding) / maxX) * xVal;
@@ -56,6 +65,14 @@ export const AxisController = ({
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
+    function Kale(ctx:CanvasRenderingContext2D,x:number[],y:number[]){
+  ctx.beginPath();
+  ctx.strokeStyle="gray";
+  ctx.lineWidth=5;
+  ctx.moveTo(x[0],y[0]);
+  ctx.lineTo(x[1],y[1]);
+ctx.stroke();
+}
     // Clear
     ctx.clearRect(0, 0, width, height);
 
@@ -64,6 +81,7 @@ export const AxisController = ({
     ctx.translate(padding, height - padding);
     ctx.scale(1, -1);
 
+  
     // Draw axes
     ctx.strokeStyle = "#000";
     ctx.beginPath();
@@ -79,17 +97,21 @@ export const AxisController = ({
     ctx.stroke();
 
     // Draw point
-    const scaledX = ((width - 2 * padding) / maxX) * xValue;
-    const scaledY = ((height - 2 * padding) / maxY) * yValue;
+   
 
     ctx.fillStyle = "red";
     ctx.beginPath();
     ctx.arc(scaledX, scaledY, pointRadius, 0, Math.PI * 2);
     ctx.fill();
+    
+    Kale(ctx,[kaleX,kaleX],[kaleY1,kaleY2]);
+    
+ 
 
     ctx.restore();
-  }, [xValue, yValue]);
 
+  },[xValue, yValue]);
+ 
   const handleMouseDown = (e: React.MouseEvent<HTMLCanvasElement>) => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -124,6 +146,17 @@ export const AxisController = ({
 
     setX(clampedX);
     setY(clampedY);
+if(clampedX>kaleXpos && clampedY>kaleYpos2 && clampedY<kaleYpos1 && takescore==false){
+  takescore=true;
+
+
+}
+if(takescore==true){
+  setScore(score+1);
+  setIsDragging(false);
+  setX(0);
+setY(0);
+}
   };
 
   const handleMouseUp = () => {
@@ -134,7 +167,18 @@ export const AxisController = ({
     // If mouse leaves the canvas, we should stop dragging
     setIsDragging(false);
   };
+// setTimeout(() => {
+    
+//     if (scaledX>kaleX && scaledY<kaleY1 && scaledY>kaleY2 && takescore==true) {
+    
+//     SetScore(score+1);
 
+
+
+//   }
+
+// }, 1);
+ 
   return (
     <Box>
       <canvas
@@ -152,6 +196,8 @@ export const AxisController = ({
       />
       <div>
         X: {xValue.toFixed(2)}, Y: {yValue.toFixed(2)}
+
+        Score: {score}
       </div>
     </Box>
   );

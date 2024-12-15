@@ -21,6 +21,7 @@ const scores = [
 const sortedScores = scores.sort((a, b) => b.score - a.score);
 
 export const ScoreBoard = () => {
+
   return (
     <Paper
       elevation={4}
