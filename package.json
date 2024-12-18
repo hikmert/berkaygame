@@ -7,7 +7,8 @@
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "generate-swagger": "swagger-jsdoc -d swaggerDef.js -o swagger.json"
   },
   "dependencies": {
     "@emotion/react": "^11.11.3",
@@ -18,7 +19,9 @@
     "react": "^18.3.1",
     "react-babylonjs": "^3.2.1",
     "react-dom": "^18.3.1",
-    "react-router-dom": "^6.22.1"
+    "react-router-dom": "^6.22.1",
+    "swagger-jsdoc": "^6.1.0",
+    "swagger-ui-express": "^4.3.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.9.1",
